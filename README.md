@@ -3,8 +3,9 @@
 
 ## Available Plugins
 
-| Example | Description |
+| Plugin | Description |
 |---|---|
+| [`VibeVault`](plugins/VibeVault/) | Virtual storage vaults for players -- multiple tiers, group vaults, sharing, upgrades, trash, MySQL/file storage |
 | `ExamplePlugin` | Sample RocketMod plugin demonstrating commands, events, and configuration |
 
 ## VibePlugins Tests
@@ -107,6 +108,7 @@ Full documentation is also available at [vibeplugins.github.io/VibePlugins](http
 - [Container Configuration](docs/container-configuration.md) -- server flags, MySQL, Redis, sidecars
 - [Distributed Testing](docs/distributed-testing.md) -- parallel execution with server workers
 - [CI/CD Integration](docs/ci-cd-integration.md) -- GitHub Actions, conditional tests
+- [VibeVault Plugin](docs/plugins/vibevault.md) -- virtual vault plugin documentation
 - [Troubleshooting](docs/troubleshooting.md) -- common errors, diagnostics, FAQ
 
 ###  Project Structure
@@ -118,6 +120,9 @@ docs/                                       Documentation
 examples/                                   Example plugins
   ExamplePlugin/                            Sample RocketMod plugin
   ExamplePlugin.Tests/                      Integration tests for the sample plugin
+plugins/                                    Production plugins
+  VibeVault/                                Virtual storage vault plugin
+  VibeVault.Tests/                          Integration tests for VibeVault
 prompts/                                    Prompts used for generating code
 testbase/                                   Unit tests framework for RocketMod and Unturned
 references/
