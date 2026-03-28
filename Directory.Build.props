@@ -3,10 +3,10 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Authors>VibeVault</Authors>
-    <Company>VibeVault</Company>
+    <Authors>VibePlugins</Authors>
+    <Company>VibePlugins</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/vibevault/vibevault</RepositoryUrl>
+    <RepositoryUrl>https://github.com/vibeplugins/vibeplugins</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>

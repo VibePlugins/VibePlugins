@@ -1897,6 +1897,43 @@ VIBEPLUGINS_ENABLE_CONTAINERS=true dotnet test
 
 ---
 
+### Known Limitations & Gotchas
+
+These issues were discovered during integration testing and are important to be aware of:
+
+**Containerfile & Server Startup:**
+- SteamCMD requires `+force_install_dir /opt/unturned` — the default install path is unpredictable
+- The Unturned server instance directory is named after the **map** (e.g., `Servers/PEI/`), not a custom server name. `WithMap("MyMap")` changes both the map and the server directory
+- `-SkipAssets` is added by default for faster startup (~60-90 seconds vs ~3-5 minutes)
+- First Docker image build downloads ~1.9 GB via SteamCMD; subsequent builds use the Docker cache
+
+**Plugin Deployment:**
+- `0Harmony.dll` must be explicitly copied to `Rocket/Libraries/` — RocketMod cannot resolve it otherwise
+- The framework uses `AppDomain.CurrentDomain.BaseDirectory` to find transitive dependencies because `Assembly.Location` may point to shadow-copied paths
+- The TestHarness plugin DLL is automatically deployed alongside your test plugin
+
+**Server Lifecycle & Containers:**
+- `docker restart` preserves the container but may reassign the mapped port — the framework queries `docker port` directly instead of using Testcontainers' cached value
+- Testcontainers' `StopAsync()` destroys the container; the framework uses `docker restart` via CLI for reuse
+- Do not use `WithWaitStrategy` for port 27099 — the harness plugin isn't deployed when the container first starts
+
+**TCP Bridge / Harness Timing:**
+- `Level.onPostLevelLoaded` fires before RocketMod plugin `Load()` in the loading sequence — the harness sends the ready message when a client connects, not on level load
+- The bridge retry loop retries the entire connect+wait-for-ready cycle, not just connection attempts
+- The server may accept TCP connections before the harness TCP listener is fully initialized
+
+**xUnit Framework Integration:**
+- `TestFrameworkAttribute` is sealed in xUnit 2.9.x — use `RocketModTestFrameworkConstants` with `[assembly: TestFramework(...)]`
+- `XunitTestAssemblyRunner.RunAsync()` is not virtual — initialization is done in `RunTestCollectionsAsync()`
+- `XunitTestMethodRunner.ConstructorArguments` is not a protected member — stored locally
+
+**RocketMod LDM (RestoreMonarchy.RocketRedist) Specifics:**
+- Uses synchronous `Load()` / `Unload()`, NOT the async `OnActivate()` / `OnDeactivate()` from the Rocket.Core reference submodule
+- Harmony patches targeting plugin lifecycle must target `RocketPlugin.Load()`, not `Plugin.ActivateAsync()`
+- `U.Events.OnPlayerConnected` requires the `Rocket.Unturned.U` class instance, not `UnturnedEvents` static access
+
+---
+
 ### Testing Framework Reference
 
 Quick-reference table of key types and their purpose.

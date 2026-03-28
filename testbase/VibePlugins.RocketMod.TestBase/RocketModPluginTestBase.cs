@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using VibePlugins.RocketMod.TestBase.Protocol;
 using VibePlugins.RocketMod.TestBase.Shared;
 using VibePlugins.RocketMod.TestBase.Shared.Protocol;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace VibePlugins.RocketMod.TestBase
 {
@@ -18,6 +20,11 @@ namespace VibePlugins.RocketMod.TestBase
     /// </summary>
     public class RocketModPluginTestBase : RocketModPluginTestBase<TestRocketModPlugin>
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="RocketModPluginTestBase"/>.
+        /// </summary>
+        /// <param name="output">Optional xUnit test output helper for log forwarding.</param>
+        protected RocketModPluginTestBase(ITestOutputHelper output = null) : base(output) { }
     }
 
     /// <summary>
@@ -32,6 +39,21 @@ namespace VibePlugins.RocketMod.TestBase
     {
         private TestSession? _session;
         private readonly List<Func<Task>> _cleanupCallbacks = new List<Func<Task>>();
+        private CancellationTokenSource? _logForwardingCts;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="RocketModPluginTestBase{TPlugin}"/>.
+        /// </summary>
+        /// <param name="output">Optional xUnit test output helper for log forwarding.</param>
+        protected RocketModPluginTestBase(ITestOutputHelper output = null)
+        {
+            Output = output;
+        }
+
+        /// <summary>
+        /// Gets the xUnit test output helper, if one was provided via constructor injection.
+        /// </summary>
+        protected ITestOutputHelper Output { get; }
 
         /// <summary>Default timeout for waiting for the harness to become ready.</summary>
         protected virtual TimeSpan HarnessReadyTimeout => TimeSpan.FromSeconds(120);
@@ -128,6 +150,15 @@ namespace VibePlugins.RocketMod.TestBase
             // 5. Restart server
             await _session.RestartServerAsync().ConfigureAwait(false);
 
+            // 5b. Start log forwarding if an output helper is available
+            if (Output != null && _session.Container != null)
+            {
+                _logForwardingCts = new CancellationTokenSource();
+                _session.Container.StartLogForwarding(
+                    line => Output.WriteLine(line),
+                    _logForwardingCts.Token);
+            }
+
             // 6. Wait for harness ready
             await _session.WaitForHarnessReadyAsync(HarnessReadyTimeout).ConfigureAwait(false);
 
@@ -151,6 +182,32 @@ namespace VibePlugins.RocketMod.TestBase
         /// </summary>
         public async Task DisposeAsync()
         {
+            // Stop log forwarding
+            if (_logForwardingCts != null)
+            {
+                _logForwardingCts.Cancel();
+                _logForwardingCts.Dispose();
+                _logForwardingCts = null;
+            }
+
+            // Dump container logs for diagnosability
+            try
+            {
+                if (Output != null && _session?.Container != null)
+                {
+                    var (stdout, _) = await _session.Container.GetLogsAsync().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(stdout))
+                    {
+                        var lines = stdout.Split('\n');
+                        var lastLines = lines.Skip(Math.Max(0, lines.Length - 50));
+                        Output.WriteLine("=== Container Logs (last 50 lines) ===");
+                        foreach (var line in lastLines)
+                            Output.WriteLine(line);
+                    }
+                }
+            }
+            catch { /* swallow log dump errors */ }
+
             if (_session?.Bridge == null || !_session.Bridge.IsConnected)
                 return;
 
@@ -199,6 +256,19 @@ namespace VibePlugins.RocketMod.TestBase
             {
                 Console.Error.WriteLine($"[RocketModPluginTestBase] ClearEventCaptures failed: {ex.Message}");
             }
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // Logging
+        // ───────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Writes a diagnostic message to the xUnit test output, if available.
+        /// </summary>
+        /// <param name="message">The message to write.</param>
+        protected void Log(string message)
+        {
+            Output?.WriteLine(message);
         }
 
         // ───────────────────────────────────────────────────────────────

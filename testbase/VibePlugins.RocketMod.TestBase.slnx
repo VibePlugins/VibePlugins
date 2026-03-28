@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/examples/">
+    <Project Path="../examples/ExamplePlugin.Tests/ExamplePlugin.Tests.csproj" />
+    <Project Path="../examples/ExamplePlugin/ExamplePlugin.csproj" />
+  </Folder>
+  <Folder Name="/testbase/">
+    <Project Path="VibePlugins.RocketMod.TestBase.Shared/VibePlugins.RocketMod.TestBase.Shared.csproj" />
+    <Project Path="VibePlugins.RocketMod.TestBase.Tools/VibePlugins.RocketMod.TestBase.Tools.csproj" />
+    <Project Path="VibePlugins.RocketMod.TestBase.Xunit/VibePlugins.RocketMod.TestBase.Xunit.csproj" />
+    <Project Path="VibePlugins.RocketMod.TestBase/VibePlugins.RocketMod.TestBase.csproj" />
+    <Project Path="VibePlugins.RocketMod.TestHarness/VibePlugins.RocketMod.TestHarness.csproj" />
+  </Folder>
+</Solution>

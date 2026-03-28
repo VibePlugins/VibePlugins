@@ -1,6 +1,6 @@
 # Documentation Skill
 
-Guidelines for creating and maintaining documentation in the VibeVault project.
+Guidelines for creating and maintaining documentation in the VibePlugins projects.
 
 ---
 

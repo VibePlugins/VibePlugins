@@ -2,7 +2,7 @@
 _layout: landing
 ---
 
-# VibeVault
+# VibePlugins Tests Framework
 
 Containerized integration testing framework for RocketMod Unturned plugins.
 

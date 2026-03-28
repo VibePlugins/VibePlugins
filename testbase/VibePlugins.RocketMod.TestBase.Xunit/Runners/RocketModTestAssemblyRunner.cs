@@ -79,6 +79,10 @@ namespace VibePlugins.RocketMod.TestBase.Xunit.Runners
                     _diagnosticSink.OnMessage(new DiagnosticMessage(
                         "[RocketModTestAssemblyRunner] Ensuring container image exists..."));
 
+                    // TODO: ContainerImageBuilder writes build progress to Console.WriteLine,
+                    // which does not appear in VS Test Explorer output. Consider accepting an
+                    // IMessageSink or Action<string> callback to forward build output through
+                    // the xUnit diagnostic sink for better visibility during test runs.
                     await ContainerImageBuilder.EnsureImageExistsAsync(
                         cancellationToken: cancellationTokenSource.Token).ConfigureAwait(false);
 

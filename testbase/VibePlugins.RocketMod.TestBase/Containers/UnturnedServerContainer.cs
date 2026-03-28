@@ -23,6 +23,7 @@ namespace VibePlugins.RocketMod.TestBase.Containers
         private readonly string _rocketDirectory;
         private readonly int _bridgePort;
         private bool _disposed;
+        private Task? _logForwardingTask;
 
         /// <summary>
         /// Initializes a new instance of <see cref="UnturnedServerContainer"/>.
@@ -239,17 +240,63 @@ namespace VibePlugins.RocketMod.TestBase.Containers
         /// Gets the stdout and stderr logs from the Unturned server container.
         /// </summary>
         /// <param name="since">Optional UTC timestamp to get logs since.</param>
+        /// <param name="until">Optional UTC timestamp to get logs until. Defaults to now.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>A tuple of (stdout, stderr) log content.</returns>
         public async Task<(string Stdout, string Stderr)> GetLogsAsync(
             DateTime? since = null,
+            DateTime? until = null,
             CancellationToken ct = default)
         {
             DateTime sinceValue = since ?? new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime untilValue = DateTime.UtcNow;
+            DateTime untilValue = until ?? DateTime.UtcNow;
             var (stdout, stderr) = await _serverContainer.GetLogsAsync(sinceValue, untilValue, false, ct)
                 .ConfigureAwait(false);
             return (stdout, stderr);
+        }
+
+        /// <summary>
+        /// Starts consuming container stdout/stderr and forwarding each line to the callback.
+        /// Call this after the container has been started.
+        /// </summary>
+        public void StartLogForwarding(Action<string> onLog, CancellationToken ct = default)
+        {
+            if (_logForwardingTask != null) return;
+            _logForwardingTask = Task.Run(async () =>
+            {
+                try
+                {
+                    var since = DateTime.UtcNow;
+                    while (!ct.IsCancellationRequested && !_disposed)
+                    {
+                        await Task.Delay(2000, ct).ConfigureAwait(false);
+                        try
+                        {
+                            var (stdout, stderr) = await GetLogsAsync(
+                                since: since,
+                                until: DateTime.UtcNow,
+                                ct: ct).ConfigureAwait(false);
+                            since = DateTime.UtcNow;
+
+                            if (!string.IsNullOrEmpty(stdout))
+                            {
+                                foreach (var line in stdout.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                                    onLog?.Invoke($"[Unturned] {line.TrimEnd()}");
+                            }
+                            if (!string.IsNullOrEmpty(stderr))
+                            {
+                                foreach (var line in stderr.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                                    onLog?.Invoke($"[Unturned:ERR] {line.TrimEnd()}");
+                            }
+                        }
+                        catch (Exception) when (!ct.IsCancellationRequested)
+                        {
+                            // Container may have stopped — ignore
+                        }
+                    }
+                }
+                catch (OperationCanceledException) { }
+            }, ct);
         }
 
         /// <summary>

@@ -785,6 +785,10 @@ static class RedirectPatch
 
 8. **Transpiler fragility:** IL patterns change between game versions. Always log a warning if your `CodeMatcher` fails to find its target rather than silently doing nothing.
 
+9. **RocketMod LDM uses synchronous plugin lifecycle:** The RestoreMonarchy.RocketRedist NuGet package provides the legacy LDM RocketMod API with synchronous `Load()` / `Unload()` methods, not the modern async `OnActivate()` / `OnDeactivate()` from the Rocket.Core source. Harmony patches targeting plugin lifecycle must target `RocketPlugin<TConfig>.Load()`, not `Plugin.ActivateAsync()`.
+
+10. **Unturned level loading order:** `Level.onPostLevelLoaded` fires before RocketMod finishes loading custom plugin types. If your Harmony patch or hook relies on all plugins being loaded, subscribe to the event in `Load()` but also check `Level.isLoaded` — you may miss the event if your plugin loads after it fires.
+
 ---
 
 ## Debugging Patches

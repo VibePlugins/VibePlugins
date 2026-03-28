@@ -1,6 +1,8 @@
 FROM steamcmd/steamcmd:ubuntu-24
 
-# Install Unturned Dedicated Server directly into /opt/unturned
+# Install Unturned Dedicated Server directly into /opt/unturned.
+# +force_install_dir is required because SteamCMD's default install path varies
+# by environment and is unpredictable inside Docker containers.
 RUN steamcmd +force_install_dir /opt/unturned \
     +login anonymous \
     +app_update 1110390 validate \

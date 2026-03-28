@@ -14,8 +14,8 @@
     "globalMetadataFiles": [],
     "template": ["default", "modern"],
     "globalMetadata": {
-      "_appTitle": "VibeVault",
-      "_appFooter": "VibeVault - Containerized integration testing for RocketMod plugins",
+      "_appTitle": "VibePlugins",
+      "_appFooter": "VibePlugins - Vibe Coding RocketMod plugins",
       "_enableSearch": true
     }
   }
