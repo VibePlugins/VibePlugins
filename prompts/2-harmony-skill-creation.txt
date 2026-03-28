@@ -1,9 +1,0 @@
-1. Move the unturned and rocketmod submodules to a separate "references" directory in the project root. Update the related skill files for path updates.
-
-2. Add harmony as submodule: https://github.com/pardeike/Harmony to the references directory.
-
-3. Write a .agents/skills/Harmony/SKILL.md that instructs and explains how to use Harmony for patching / redirecting / hooking functions at runtime independent of Unturned, for yourself. Explain the types of hooks possible, surgically patching IL data, prefix/postfix patches, modifying return values, special cases etc. all with concrete examples.
-
-4. Look up example Unturned RocketMod plugins that use Harmony for patching and clone these plugins to C:\Users\esozb\source\repos\external and anaylse how these plugins use Harmony for Unturned RocketMod.
-
-5.  Add basic harmony examples, notes and instructions to the Unturned RocketMod skill and refer to the Harmony skill for detailed implementations.

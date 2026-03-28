@@ -1,9 +1,0 @@
-Create a README.md with an overview of the project and examples of how to use the features in this repository. The README must be simple and straightforward come to the point without unnecessary fluff. The README should also prominently include example code snippets.
-
-Create a docs directory and include more detailed documentation on each feature. Use a separate agent for each plugin / skill. The documentation should be well-structured and easy to follow, with clear examples and explanations for each topic. Include a section on troubleshooting common issues that may arise when using the test framework. 
-
-Important: don't use emojis and don't make the documentation too verbose. It should be concise and to the point, while still providing all necessary information for users to effectively use the test framework. Don't use a language that is overly hyped or promotional, but rather a professional and informative tone that focuses on the practical aspects of using this repository.
-
-Add a .agents/skills/documentation/SKILL.md file that describes how documentation needs to be created. Include instructions on how to structure the documentation, what information to include, and how to keep it up-to-date as new features are added or existing features are modified. Also include examples of well-written documentation for reference.
-
-Update the AGENTS.md file to include a link to the documentation skill and instructions on how to use it to create and maintain documentation for the project. Emphasize the importance of keeping the documentation up-to-date and accurate, and encourage contributors to use the documentation skill whenever they add new features or modify existing ones.
