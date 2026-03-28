@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>ExamplePlugin.Tests</RootNamespace>
+    <AssemblyName>ExamplePlugin.Tests</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\testbase\VibePlugins.RocketMod.TestBase\VibePlugins.RocketMod.TestBase.csproj" />
+    <ProjectReference Include="..\..\testbase\VibePlugins.RocketMod.TestBase.Xunit\VibePlugins.RocketMod.TestBase.Xunit.csproj" />
+    <ProjectReference Include="..\ExamplePlugin\ExamplePlugin.csproj" />
+  </ItemGroup>
+</Project>

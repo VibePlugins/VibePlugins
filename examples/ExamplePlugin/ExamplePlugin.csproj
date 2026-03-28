@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>ExamplePlugin</RootNamespace>
+    <AssemblyName>ExamplePlugin</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="RestoreMonarchy.RocketRedist" Version="3.24.7.1" />
+  </ItemGroup>
+</Project>

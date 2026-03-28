@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>VibePlugins.RocketMod.TestHarness</RootNamespace>
+    <AssemblyName>VibePlugins.RocketMod.TestHarness</AssemblyName>
+    <Description>Server-side test harness plugin for RocketMod test framework</Description>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+    <PackageReference Include="RestoreMonarchy.RocketRedist" Version="3.24.7.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VibePlugins.RocketMod.TestBase.Shared\VibePlugins.RocketMod.TestBase.Shared.csproj" />
+  </ItemGroup>
+</Project>

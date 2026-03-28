@@ -1,0 +1,9 @@
+[submodule "references/unturned"]
+	path = references/unturned
+	url = https://github.com/Unturned-Datamining/Unturned-Datamining
+[submodule "references/rocketmod"]
+	path = references/rocketmod
+	url = https://github.com/RocketMod/Rocket
+[submodule "references/harmony"]
+	path = references/harmony
+	url = https://github.com/pardeike/Harmony

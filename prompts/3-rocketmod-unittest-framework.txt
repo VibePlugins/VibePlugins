@@ -1,0 +1,34 @@
+Create a plan for the following instructions.
+
+* Create a xUnit-based test library for RocketMod Unturned plugins. Call it VibePlugins.RocketMod.TestBase
+* The tests must be ran inside a RocketMod Unturned server instance.
+
+For each task below, create a subagent to handle it and report back to the main agent. The main agent will be responsible for orchestrating the tasks and ensuring they are completed in the correct order.
+
+  1. Write a Containerfile for a steamcmd based Unturned server with RocketMod installed. Use steamcmd to install the dedicated Unturned server and copy RocketMod from the Unturned Extras directory to the server directory. It must be embedded into the test assembly as an embedded resource. Add a PowerShell command (like Add-Migration) to build / update the Containerfile.
+  
+  2.  Create RocketModPluginTestBase class that will be the base class for all tests and will handle the container management, server instance management, plugin management and test orchestration.
+  
+  3. Use Harmony to hook into the server loading process and to trigger / inject code after the test plugin is loaded.Add all Unturned dedicated server cli flags and options as extension methods to a testcontainers builder and allow tests to overwrite the default container setup. Also allow defining an arbitary amount of additional containers like e.g. MySQL or Redis containers if needed by tests. Provide a built-in way of adding a MySQL container with a clean way of getting the connection string for it. Add a method for running code on cleanup after each test and auto up MySQL if its used. Do this by registering callbacks.
+  
+  4. Define a custom runner for running unit tests. Create a separate nuget package if required. When tests are triggered, first ensure the Containerfile gets built if it doesn't exist already (as vibeplugins:rocketmod), then create an instance with all related resources mount a unique temporary path as RocketMod directory to it and copy the test plugin and it's libraries into each related directory. Then start the container with the configured arguments (add -SkipAssets added by default but make it overrideable). You must wait for the plugin to get loaded in the test container before starting to orchestrate the tests. Use harmony to patch related functions to interact remotely with the tests. You must also provide a way to run code on the server instance and get the result back to the test method, as well as a way to copy files to the container instance and run commands inside the container instance.
+ 
+  5. Provide mock helpers / APIs that are compatible with the Unity runtime. They should be generic and for example allow creating e.g. Zombies or Players on the fly and to simulate actions with or on them.
+  
+  6. Provide a helper to wait for the next (or an arbitary amount of) ticks / frames / physics updates inside a test. Also add a way to wait for a specific event with an optional expression as matcher / correct instance checker.
+  
+  7. Add a default TestRocketModPlugin clas but also allow plugins to load and use their own plugin type for tests using generics.  
+ 
+  8. Clean up the plugins and libraries directories before each test case to re-populate them only with the plugin DLL with its related library dependencies to ensure a clean slate. Clear the database as well but allow tests to override this or to define their own additional cleanup behaviour. Reuse everything else like the containers themselves to speed up tests.  Make sure to properly handle the case where the server or any plugin fails to load or crashes during loading.
+    
+  9. Add a proper and clean way to test RocketMod command executions. Make sure to properly handle the case where the command fails or throws an exception. Add a way to get the result of the command execution result to the test method and to assert on it. Add a way to define the related environment like the actor that executes the command, the command arguments and the expected result. Also add a way to test for expected exceptions or failed command executions. 
+  
+  10. Add a proper and clean way to test Unturned and RocketMod events, e.g. if a specific message was sent when a player gets killed by a zombie. Use a proper design pattern that allows tests to define the interactions and expected behaviors in a clear and readable way.
+  
+  11. Make tests distributable among a configurable amount of server instances. Each instance must have its own additional containers like e.g. MySQL (if configured). Load balance all tests to run in parallel on all server instances to speed up tests. Only one plugin with only one test can be tested at a time on each server worker. Idle workers must always pick up the next test from the pending queue unless none are left anymore. Reuse container instances for test instances, so only run cleanup callbacks and restart it when moving to the next case. Make sure to properly stop and dispose all container instances after the test session is done.
+
+  12. Add a GitHub action workflow to perform example tests on pushes and tags. Make sure to properly handle the case where the runner doesn't support nested containers and to provide a fallback for running the tests without the container instances in this case. 
+  
+  13. On tags, build and publish the nuget packages after running the previously mentioned workflow. 
+  
+  14. Update the .agents/skills/RocketMod/SKILL.md file with instructions on how to use the test framework to write tests for RocketMod plugins. Include examples of test cases and how to run them. Also include instructions on how to set up the test framework and how to interpret the results of the tests.

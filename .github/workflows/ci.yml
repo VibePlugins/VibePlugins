@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  SOLUTION: VibePlugins.RocketMod.TestBase.slnx
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest  # net48 projects require .NET Framework
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false  # Reference submodules not needed for building
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION }} -c Release --no-restore -warnaserror
+
+      - name: Check formatting
+        run: dotnet format ${{ env.SOLUTION }} --verify-no-changes --no-restore
+
+      - name: Check container support
+        id: container-check
+        shell: bash
+        run: |
+          if docker info > /dev/null 2>&1; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build container image
+        if: steps.container-check.outputs.available == 'true'
+        run: dotnet run --project testbase/VibePlugins.RocketMod.TestBase.Tools -- build-image --tag vibeplugins:rocketmod
+
+      - name: Test (with containers)
+        if: steps.container-check.outputs.available == 'true'
+        run: dotnet test ${{ env.SOLUTION }} -c Release --no-build --logger "trx;LogFileName=test-results.trx"
+        env:
+          VIBEPLUGINS_ENABLE_CONTAINERS: 'true'
+
+      - name: Test (without containers)
+        if: steps.container-check.outputs.available == 'false'
+        run: dotnet test ${{ env.SOLUTION }} -c Release --no-build --filter "Category!=RequiresContainer" --logger "trx;LogFileName=test-results.trx"
+        env:
+          VIBEPLUGINS_ENABLE_CONTAINERS: 'false'
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: '**/test-results.trx'
+          if-no-files-found: warn
+
+  publish:
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION }} -c Release --no-restore
+
+      - name: Pack NuGet packages
+        run: |
+          dotnet pack testbase/VibePlugins.RocketMod.TestBase.Shared/VibePlugins.RocketMod.TestBase.Shared.csproj -c Release -o ./nupkg /p:Version=${{ steps.version.outputs.version }} --no-build
+          dotnet pack testbase/VibePlugins.RocketMod.TestBase/VibePlugins.RocketMod.TestBase.csproj -c Release -o ./nupkg /p:Version=${{ steps.version.outputs.version }} --no-build
+          dotnet pack testbase/VibePlugins.RocketMod.TestBase.Xunit/VibePlugins.RocketMod.TestBase.Xunit.csproj -c Release -o ./nupkg /p:Version=${{ steps.version.outputs.version }} --no-build
+          dotnet pack testbase/VibePlugins.RocketMod.TestBase.Tools/VibePlugins.RocketMod.TestBase.Tools.csproj -c Release -o ./nupkg /p:Version=${{ steps.version.outputs.version }} --no-build
+
+      - name: Push to NuGet
+        run: dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

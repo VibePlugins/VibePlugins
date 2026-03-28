@@ -1,0 +1,12 @@
+1. Research what Unturned and RocketMod for Unturned are.
+
+2. Initialize a git repository and add the Unturned and RocketMod repositories as submodules to the repository root as "unturned" and "rocketmod" directories.
+
+https://github.com/RocketMod/Rocket (rocketmod)
+https://github.com/Unturned-Datamining/Unturned-Datamining (unturned)
+
+3. Find and clone some example Unturned RocketMod plugins to C:\Users\esozb\source\repos\external and analyse them to learn about how RocketMod and Unturned plugins and the related APIs work. Only use these as an example on how the APIs work in general, not as an example on how to write proper plugins since most open-source Unturned plugins are written poorly.
+
+4. Write your finding and notes on how to create proper Unturned RocketMod plugins as instructions for yourself to .agents/skills/RocketMod/SKILL.md. The instructions must emphasize on production-grade code with proper design patterns, best practices, abstractions etc., however don't over-engineer plugins either. Note: always use the dotnet SDK csproj format and not the old .csproj format.
+
+5. Publish this repository to https://github.com/VibePlugins/VibePlugins
