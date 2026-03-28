@@ -1,0 +1,6 @@
+- name: Docs
+  href: docs/
+- name: VibePlugins Testing Framework
+  href: docs/command-testing.md
+- name: GitHub
+  href: https://github.com/vibeplugins/VibePlugins

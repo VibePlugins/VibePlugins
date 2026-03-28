@@ -2,7 +2,12 @@
   "build": {
     "content": [
       {
-        "files": ["docs/**.md", "docs/**/toc.yml", "index.md"]
+        "files": [
+          "docs/**.md",
+          "docs/**/toc.yml",
+          "index.md",
+          "toc.yml"
+        ]
       }
     ],
     "resource": [
@@ -15,8 +20,21 @@
     "template": ["default", "modern"],
     "globalMetadata": {
       "_appTitle": "VibePlugins",
-      "_appFooter": "VibePlugins - Vibe Coding RocketMod plugins",
-      "_enableSearch": true
+      "_appName": "VibePlugins",
+      "_appFooter": "&copy; 2026 VibePlugins. Built with <a href=\"https://dotnet.github.io/docfx\">DocFX</a>.",
+      "_enableSearch": true,
+      "_enableNewTab": true,
+      "_disableContribution": false,
+      "_gitContribute": {
+        "repo": "https://github.com/esozb/vibevault",
+        "branch": "main"
+      },
+      "pdf": false
+    },
+    "markdownEngineProperties": {
+      "alerts": {
+        "TODO": "alert alert-secondary"
+      }
     }
   }
 }

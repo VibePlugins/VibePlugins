@@ -3,6 +3,10 @@
     <Project Path="../examples/ExamplePlugin.Tests/ExamplePlugin.Tests.csproj" />
     <Project Path="../examples/ExamplePlugin/ExamplePlugin.csproj" />
   </Folder>
+  <Folder Name="/plugins/">
+    <Project Path="../plugins/VibeVault/VibeVault.csproj" />
+    <Project Path="../plugins/VibeVault.Tests/VibeVault.Tests.csproj" />
+  </Folder>
   <Folder Name="/testbase/">
     <Project Path="VibePlugins.RocketMod.TestBase.Shared/VibePlugins.RocketMod.TestBase.Shared.csproj" />
     <Project Path="VibePlugins.RocketMod.TestBase.Tools/VibePlugins.RocketMod.TestBase.Tools.csproj" />
