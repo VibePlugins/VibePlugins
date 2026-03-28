@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/examples/">
-    <Project Path="../examples/ExamplePlugin.Tests/ExamplePlugin.Tests.csproj" />
-    <Project Path="../examples/ExamplePlugin/ExamplePlugin.csproj" />
+    <Project Path="../plugins/ExamplePlugin.Tests/ExamplePlugin.Tests.csproj" />
+    <Project Path="../plugins/ExamplePlugin/ExamplePlugin.csproj" />
   </Folder>
   <Folder Name="/plugins/">
     <Project Path="../plugins/VibeVault/VibeVault.csproj" />

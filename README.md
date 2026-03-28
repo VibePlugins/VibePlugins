@@ -117,10 +117,9 @@ Full documentation is also available at [vibeplugins.github.io/VibePlugins](http
 .agents/                                    Agent instructions and skills
 .github/                                    GitHub Actions configurations
 docs/                                       Documentation
-examples/                                   Example plugins
+plugins/                                   Plugins
   ExamplePlugin/                            Sample RocketMod plugin
   ExamplePlugin.Tests/                      Integration tests for the sample plugin
-plugins/                                    Production plugins
   VibeVault/                                Virtual storage vault plugin
   VibeVault.Tests/                          Integration tests for VibeVault
 prompts/                                    Prompts used for generating code
